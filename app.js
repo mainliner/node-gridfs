@@ -5,9 +5,11 @@
 
 var express = require('express');
 var routes = require('./routes');
-var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
+var fs = require('fs');
+var accessLogfile = fs.createWriteStream('access.log',{flags:'a'});
+var errorLogfile = fs.createWriteStream('error.log', {flags:'a'});
 
 var app = express();
 
@@ -23,13 +25,17 @@ app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
-if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
-}
+app.use(express.logger({stream:accessLogfile}));
+app.use(function(err, req, res, next){
+    var meta = '['+ new Date() +']' + req.url + '\n';
+    errorLogfile.write(meta + err.stack + '\n');
+    next();
+});
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+setInterval(routes.clearBuffer,10800000); //10800000三小时清理缓存数组
+
+
+app.get('/:fileid', routes.index);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
