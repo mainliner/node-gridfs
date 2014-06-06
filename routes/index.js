@@ -6,7 +6,7 @@ global['bufferSize'] = 20;
 global['mediaData'] = []; 
 
 exports.index = function(req, res){
-    var data = findInBuffer(req.query.id);
+    var data = findInBuffer(req.params.fileid);
     if(data){
         return res.send(data);
     }else{
@@ -15,14 +15,14 @@ exports.index = function(req, res){
                 return res.json(400,err);
             }
             var grid = new Grid(db, 'fs');
-            var id = new ObjectID(req.query.id);
+            var id = new ObjectID(req.params.fileid);
             grid.get(id,function(err,doc){
                 mongodbPool.release(db);
                 if(err){
                     return res.json(400,err);
                 }
                 if(doc){
-                    updateBuffer(req.query.id, doc);
+                    updateBuffer(req.params.fileid, doc);
                     return res.send(doc);
                 }else{
                     return res.send('None');
