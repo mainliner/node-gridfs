@@ -42,7 +42,7 @@ app.use(function(err, req, res, next){
 setInterval(routes.clearBuffer,10800000); //10800000三小时清理缓存数组
 
 
-app.get('/:fileid', routes.index);
+app.get('/file', routes.index);
 
 server.on('request', app);
 if(!module.parent) {
