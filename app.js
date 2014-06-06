@@ -45,9 +45,10 @@ setInterval(routes.clearBuffer,10800000); //10800000三小时清理缓存数组
 app.get('/:fileid', routes.index);
 
 server.on('request', app);
-server.listen(app.get('port'), function(){
-    console.log('Express server listening on port ' + app.get('port'));
-});
-
+if(!module.parent) {
+    server.listen(app.get('port'), function(){
+        console.log('Express server listening on port ' + app.get('port'));
+    });
+}
 exports.server= server;
 exports.app = app;
