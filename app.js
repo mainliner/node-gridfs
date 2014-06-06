@@ -10,8 +10,15 @@ var path = require('path');
 var fs = require('fs');
 var accessLogfile = fs.createWriteStream('access.log',{flags:'a'});
 var errorLogfile = fs.createWriteStream('error.log', {flags:'a'});
+var domainMiddleware = require('./lib/domain.js');
 
+var server = http.createServer();
 var app = express();
+
+app.use(domainMiddleware({
+    server:server,
+    killTimeout: 30000
+}));
 
 // all environments
 app.set('port', process.env.PORT || 5050);
@@ -37,6 +44,10 @@ setInterval(routes.clearBuffer,10800000); //10800000三小时清理缓存数组
 
 app.get('/:fileid', routes.index);
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+server.on('request', app);
+server.listen(app.get('port'), function(){
+    console.log('Express server listening on port ' + app.get('port'));
 });
+
+exports.server= server;
+exports.app = app;

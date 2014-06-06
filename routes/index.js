@@ -21,8 +21,12 @@ exports.index = function(req, res){
                 if(err){
                     return res.json(400,err);
                 }
-                updateBuffer(req.params.fileid,doc);
-                return res.send(doc);
+                if(doc){
+                    updateBuffer(req.params.fileid,doc);
+                    return res.send(doc);
+                }else{
+                    return res.send('None');
+                }
             });
         });
     }
