@@ -15,7 +15,11 @@ exports.index = function(req, res){
                 return res.json(400,err);
             }
             var grid = new Grid(db, 'fs');
-            var id = new ObjectID(req.params.fileid);
+            try{
+                var id = new ObjectID(req.params.fileid);
+            }catch(e){
+                return res.json(400,{'err':'wrong id format'});
+            }
             grid.get(id,function(err,doc){
                 mongodbPool.release(db);
                 if(err){
